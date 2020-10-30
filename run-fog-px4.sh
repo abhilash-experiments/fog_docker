@@ -6,6 +6,8 @@ N=${1:-0}
 no_daemon=${2:-0}
 
 export PX4_SIM_MODEL=iris_rtps
+export PX4_QGC_REMOTE_ADDRESS=172.17.0.1
+
 src_path="/px4_sitl"
 
 working_dir="/px4_sitl/instance_$N"
