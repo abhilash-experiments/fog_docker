@@ -3,12 +3,23 @@
 DO_BUILD=0
 SAVE_CONTINERS=0
 
-while getopts bs option
+usage() {
+	echo "USAGE: $0 [ -b | -s | -h ]"
+	echo " Parameters:"
+	echo "  -b : Build ROS2 and PX4-firmware"
+	echo "  -s : Save containers locally into tar file"
+	echo "  -h : Show this help message"
+	echo
+	exit -1
+}
+
+while getopts bsh option
 do
 case "$option"
 in
 	b) DO_BUILD=1;;
 	s) SAVE_CONTINERS=1;;
+	h) usage ;;
 esac
 done
 
