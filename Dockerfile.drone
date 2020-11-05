@@ -7,6 +7,9 @@ RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt
 RUN echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list
 RUN apt update -y && apt install -y ros-foxy-ros-base ros-foxy-ros-core ros-foxy-gazebo-ros-pkgs net-tools
 
+RUN mkdir /enclave
+COPY enclave/*.pem /enclave/
+
 RUN mkdir /packages
 WORKDIR /packages
 
@@ -18,6 +21,7 @@ RUN mkdir /px4_sitl
 WORKDIR /px4_sitl
 
 COPY run-fog-px4.sh                                 Tools/run-fog-px4.sh
+COPY run-fog-ros2.sh                                Tools/run-fog-ros2.sh
 COPY px4-firmware/Tools/sitl_gazebo                 Tools/sitl_gazebo
 COPY px4-firmware/ROMFS/px4fmu_common               ROMFS/px4fmu_common
 COPY px4-firmware/build/px4_sitl_rtps/bin           bin
