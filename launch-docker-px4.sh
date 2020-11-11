@@ -38,13 +38,13 @@ if [[ "$DEVICE_ID" == "" ]]; then
     usage
 fi
 
-sudo docker run --name drone_${INSTANCE} -dit dronesim_px4ros2:1.0 bash
-drone_addr=$(sudo docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' drone_${INSTANCE})
+docker run --name drone_${INSTANCE} -dit dronesim_px4ros2:1.0 bash
+drone_addr=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' drone_${INSTANCE})
 echo "Drone address: ${drone_addr}"
-sudo docker exec dronesim_gazebo bash -c "/px4_sitl_gazebo/Tools/spawn-drone.sh ${INSTANCE} ${drone_addr}"
-sudo docker exec drone_${INSTANCE} bash -c "/px4_sitl/Tools/run-fog-ros2.sh '${DEVICE_ID}'"
+docker exec dronesim_gazebo bash -c "/px4_sitl_gazebo/Tools/spawn-drone.sh ${INSTANCE} ${drone_addr}"
+docker exec drone_${INSTANCE} bash -c "/px4_sitl/Tools/run-fog-ros2.sh '${DEVICE_ID}'"
 if [[ "$INTERACTIVE" == "1" ]]; then
-    sudo docker exec -it drone_${INSTANCE} bash -c "Tools/run-fog-px4.sh ${INSTANCE} 1"
+    docker exec -it drone_${INSTANCE} bash -c "Tools/run-fog-px4.sh ${INSTANCE} 1"
 else
-    sudo docker exec drone_${INSTANCE} bash -c "Tools/run-fog-px4.sh ${INSTANCE}"
+    docker exec drone_${INSTANCE} bash -c "Tools/run-fog-px4.sh ${INSTANCE}"
 fi

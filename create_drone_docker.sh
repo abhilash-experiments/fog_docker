@@ -67,18 +67,18 @@ echo
 echo "======= Create Docker image for PX4 ========"
 echo
 cp Dockerfile.drone Dockerfile
-sudo docker build --tag dronesim_px4ros2:1.0 .
+docker build --tag dronesim_px4ros2:1.0 .
 if [[ $SAVE_CONTINERS == 1 ]]; then
-	sudo docker save -o dronesim_PX4_ROS2-1.0.tar dronesim_px4ros2:1.0
+	docker save -o dronesim_PX4_ROS2-1.0.tar dronesim_px4ros2:1.0
 fi
 
 echo
 echo "====== Create Docker image for Gazebo ======"
 echo
 cp Dockerfile.gazebo Dockerfile
-sudo docker build --tag dronesim_gazebo:1.0 .
+docker build --tag dronesim_gazebo:1.0 .
 if [[ $SAVE_CONTINERS == 1 ]]; then
-	sudo docker save -o dronesim_Gazebo-1.0.tar dronesim_gazebo:1.0
+	docker save -o dronesim_Gazebo-1.0.tar dronesim_gazebo:1.0
 fi
 
 rm Dockerfile

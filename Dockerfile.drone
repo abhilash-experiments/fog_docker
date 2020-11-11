@@ -8,7 +8,7 @@ RUN echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/u
 RUN apt update -y && apt install -y ros-foxy-ros-base ros-foxy-ros-core ros-foxy-gazebo-ros-pkgs net-tools
 
 RUN mkdir /enclave
-COPY enclave/*.pem /enclave/
+COPY enclave/* /enclave/
 
 RUN mkdir /packages
 WORKDIR /packages
