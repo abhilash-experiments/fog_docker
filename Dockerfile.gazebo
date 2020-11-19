@@ -2,7 +2,7 @@ FROM ubuntu:20.04
 ENV TZ=Europe/Helsinki
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt update -y && apt install -y gazebo9 libgazebo9 gazebo9-plugin-base libprotobuf-dev libboost-dev net-tools
+RUN apt update -y && apt install -y gazebo9 libgazebo9 gazebo9-plugin-base libprotobuf-dev libboost-dev net-tools python3-jinja2 python3-numpy
 
 RUN mkdir /px4_sitl_gazebo
 WORKDIR /px4_sitl_gazebo

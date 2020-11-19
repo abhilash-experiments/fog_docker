@@ -16,7 +16,7 @@ working_dir="/px4_sitl/instance_$N"
 cd $working_dir
 echo "starting PX4 instance $N in $(pwd)"
 if [ $no_daemon == 1 ]; then
-	../bin/px4 -i $N "$src_path/ROMFS/px4fmu_common" -w sitl_${PX4_SIM_MODEL}_${N} -s etc/init.d-posix/rcS
+	../bin/px4 -i $N "$src_path/etc" -w sitl_${PX4_SIM_MODEL}_${N} -s $src_path/etc/init.d-posix/rcS
 else
-	../bin/px4 -i $N -d "$src_path/ROMFS/px4fmu_common" -w sitl_${PX4_SIM_MODEL}_${N} -s etc/init.d-posix/rcS >${working_dir}/out.log 2>${working_dir}/err.log &
+	../bin/px4 -i $N -d "$src_path/etc" -w sitl_${PX4_SIM_MODEL}_${N} -s $src_path/etc/init.d-posix/rcS >${working_dir}/out.log 2>${working_dir}/err.log &
 fi

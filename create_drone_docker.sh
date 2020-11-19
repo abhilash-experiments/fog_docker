@@ -38,6 +38,12 @@ if [[ $DO_BUILD == 1 ]]; then
 
 	echo "Update fog_sw submodules"
 	git submodule update --init --recursive
+
+	if [ ! -e mavsdk_0.34.0_ubuntu20.04_amd64.deb ]; then
+		curl -fsSL https://github.com/mavlink/MAVSDK/releases/download/v0.34.0/mavsdk_0.34.0_ubuntu20.04_amd64.deb -o mavsdk_0.34.0_ubuntu20.04_amd64.deb \
+			&& sudo dpkg -i mavsdk_0.34.0_ubuntu20.04_amd64.deb
+	fi
+
 	echo "Build fog_sw"
 	cd ros2_ws
 	colcon build
@@ -49,7 +55,7 @@ if [[ $DO_BUILD == 1 ]]; then
 	pushd .
 	if [ ! -d px4-firmware ]; then
 		echo "Clone px4-firmware git reporsitory"
-		git clone git@github.com:ssrc-tii/px4-firmware_private.git px4-firmware
+		git clone git@github.com:tiiuae/px4-firmware.git px4-firmware
 		cd px4-firmware
 	else
 		cd px4-firmware
