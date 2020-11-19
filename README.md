@@ -1,5 +1,9 @@
 # fog_docker
-Create docker images of PX4/ROS2 and Gazebo for Drone simulation environment
+Create docker images of PX4/ROS2 and Gazebo for local Drone simulation environment
+
+## Pre-requirements:
+Pre-requirement is to have Docker installed:<br>
+https://docs.docker.com/engine/install/ubuntu/
 
 ## Instractions:
 1. Clone fog_docker git repo:<br>
@@ -16,8 +20,9 @@ Create docker images of PX4/ROS2 and Gazebo for Drone simulation environment
 In case you like to see simulation in gazebo client:<br>
 `./launch-gzclient.sh`
 
-5. Launch QGroundControl and set connection: Type: UDP, Listening Port: 14550
-
+5. Launch QGroundControl and set connection: Type: TCP, Host Address: [your drone container ip], Listening Port: 5760
+  * Check drone_0 container ip address by calling:<br>
+`docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' drone_0`
 
 
 ## Files:
