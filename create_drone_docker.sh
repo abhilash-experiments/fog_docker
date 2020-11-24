@@ -29,7 +29,7 @@ if [[ $DO_BUILD == 1 ]]; then
 	pushd .
 	if [ ! -d fog_sw ]; then
 		echo "Clone fog_sw git reporsitory"
-		git clone git@github.com:ssrc-tii/fog_sw.git fog_sw
+		git clone git@github.com:tiiuae/fog_sw.git fog_sw
 		cd fog_sw
 	else
 		cd fog_sw
@@ -64,7 +64,7 @@ if [[ $DO_BUILD == 1 ]]; then
 	echo "Update px4-firmware submodules"
 	git submodule update --init --recursive
 	echo "Build px4-firmware"
-	DONT_RUN=1 make px4_sitl_rtps gazebo_iris_rtps
+	DONT_RUN=1 make px4_sitl_rtps gazebo_ssrc_fog_x
 	popd
 fi
 
