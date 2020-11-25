@@ -1,0 +1,36 @@
+ARG tag
+FROM sitl-fogsw-base:${tag} as sitl-fogsw-base-tagged
+FROM sitl-px4-base:${tag} as sitl-px4-base-tagged
+
+FROM ubuntu:20.04
+
+ENV TZ=Europe/Helsinki
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt update -y && apt install -y curl gnupg2 lsb-release \
+    && curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - \
+    && echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list \
+    && apt update -y && apt install -y ros-foxy-ros-base ros-foxy-ros-core ros-foxy-gazebo-ros-pkgs net-tools
+
+# install MAVSDK
+RUN curl -fsSL https://github.com/mavlink/MAVSDK/releases/download/v0.34.0/mavsdk_0.34.0_ubuntu20.04_amd64.deb -o mavsdk_0.34.0_ubuntu20.04_amd64.deb \
+    && dpkg -i mavsdk_0.34.0_ubuntu20.04_amd64.deb \
+    && rm mavsdk_0.34.0_ubuntu20.04_amd64.deb
+
+RUN mkdir /enclave
+
+COPY --from=sitl-fogsw-base-tagged /packages /packages
+RUN dpkg -i /packages/*.deb
+
+RUN mkdir -p /fog-drone/logs
+
+COPY --from=sitl-px4-base-tagged  /px4_sitl/Tools/sitl_gazebo                 /fog-drone/Tools/sitl_gazebo
+COPY --from=sitl-px4-base-tagged  /px4_sitl/build/px4_sitl_rtps/bin           /fog-drone/bin
+COPY --from=sitl-px4-base-tagged  /px4_sitl/build/px4_sitl_rtps/etc           /fog-drone/etc
+COPY scripts/run-fog-px4.sh                                                   /fog-drone/run-fog-px4.sh
+COPY scripts/run-fog-ros2.sh                                                  /fog-drone/run-fog-ros2.sh
+COPY scripts/drone-entrypoint.sh                                              /drone-entrypoint.sh
+
+RUN echo "source /opt/ros/foxy/setup.bash" >> /root/.bashrc
+
+WORKDIR /

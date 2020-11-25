@@ -1,0 +1,73 @@
+# PX4 FIRMWARE BUILDER
+# There should not be need to publish this builder image anywhere
+FROM gazebo:libgazebo11-focal as px4_firmware_builder
+
+# Install build tools
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    git-core \
+    libboost-all-dev \
+    libeigen3-dev \
+    libgstreamer-plugins-base1.0-dev \
+    libopencv-dev \
+    openjdk-11-jdk-headless \
+    python3 \
+    python3-empy \
+    python3-jinja2 \
+    python3-pip \
+    python3-setuptools \
+    python3-toml \
+    python3-yaml \
+    python3-packaging \
+    python3-numpy \
+    python3-genmsg \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV LANG C.UTF-8
+ENV LANGUAGE C.UTF-8
+ENV LC_ALL C.UTF-8
+
+RUN mkdir -p /fastrtps
+WORKDIR /fastrtps
+
+RUN git clone --depth 1 --branch v1.0.4 https://github.com/eProsima/Fast-RTPS-Gen.git Fast-RTPS-Gen \
+    && cd Fast-RTPS-Gen \
+    && git submodule update --init --recursive
+
+RUN git clone --depth 1 --branch v1.8.2 https://github.com/eProsima/Fast-RTPS.git FastRTPS-1.8.2 \
+    && cd FastRTPS-1.8.2 \
+    && git submodule update --init --recursive
+
+# Build fastrtpsgen
+RUN cd Fast-RTPS-Gen \
+    && ./gradlew build -x test \
+    && mkdir -p /usr/bin/ \
+    && mkdir -p /usr/share/fastrtpsgen/java/ \
+    && cp build/libs/fastrtpsgen.jar /usr/share/fastrtpsgen/java/fastrtpsgen.jar \
+    && cp scripts/fastrtpsgen /usr/bin/fastrtpsgen
+
+# Build and install fastRTPS lib
+RUN cd FastRTPS-1.8.2 \
+    && mkdir build \
+    && cd build \
+    && cmake ../ -DTHIRDPARTY=ON \
+    && make install
+
+WORKDIR /
+
+COPY px4-firmware   px4-firmware
+
+# Build the PX4 firmware
+RUN cd px4-firmware \
+    && DONT_RUN=1 make px4_sitl_rtps gazebo_ssrc_fog_x
+
+# Bare bones image containing only the build results
+# This image can be used for retrieving relevant px4 firmware artifacts
+FROM scratch
+# Copy only relevant artifacts from builder stage
+COPY --from=px4_firmware_builder /px4-firmware/Tools/setup_gazebo.bash           /px4_sitl/Tools/setup_gazebo.bash
+COPY --from=px4_firmware_builder /px4-firmware/Tools/sitl_gazebo                 /px4_sitl/Tools/sitl_gazebo
+COPY --from=px4_firmware_builder /px4-firmware/build/px4_sitl_rtps/build_gazebo  /px4_sitl/build_gazebo
+COPY --from=px4_firmware_builder /px4-firmware/build/px4_sitl_rtps/bin           /px4_sitl/build/px4_sitl_rtps/bin
+COPY --from=px4_firmware_builder /px4-firmware/build/px4_sitl_rtps/etc           /px4_sitl/build/px4_sitl_rtps/etc
