@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export PX4_SIM_MODEL=ssrc_fog_x
+cp -Rf /simulator/Tools/sitl_gazebo /export_model/
 source /usr/share/gazebo/setup.sh
 source /simulator/Tools/setup_gazebo.bash /simulator /simulator
 echo "Starting gazebo"
