@@ -1,12 +1,14 @@
 # fog_docker
-Create docker images of PX4/ROS2 and Gazebo for local Drone simulation environment
+Create docker images of PX4/ROS2 and Gazebo for local Drone simulation environment.<br>
+
+If you have ROS2 set up in host environment, you can see all the ROS2 nodes and topics of drone simulation container directly in your host machine over docker0 network.
 
 ## Pre-requirements:
 Ubuntu 20.04 with Docker installed:<br>
 https://docs.docker.com/engine/install/ubuntu/
 
 ## Instractions:
-1. Clone fog_docker git repo:<br>
+1. Clone fog_docker git repo<br>
 ```
 git clone git@github.com:tiiuae/fog_docker.git fog_docker
 cd fog_docker
@@ -15,17 +17,45 @@ cd fog_docker
 ```
 ./build.sh
 ```
-4. run system:<br>
+4. run system<br>
 ```
 ./sitl-simulator-start.sh
 ./sitl-drone-add -d <your_drone_device_id>
 ```
 
-5. Launch QGroundControl and set connection: Type: TCP, Host Address: [your drone container ip], Listening Port: 5760
-  * Check drone_0 container ip address by calling:<br>
+## Simulation viewers
+Simulation viewers helps to visualize drone activity in simulation.
+
+#### Gazebo client
+
+Gazebo client comes with gazebo installation. Make sure you install Gazebo 11.3 version to avoid version conflict between client and gzserver running in simulation container.<br>
+Instructions to install gazebo11 to Ubuntu:<br>
+http://gazebosim.org/tutorials?tut=install_ubuntu
+
+Start Gazebo client viewer:
+```
+./sitl-gzclient.sh
+```
+
+
+#### QGroundControl
+
+QGroundControl (QGC) tool can be used to visualize drone movement in world map.
+http://qgroundcontrol.com/
+
+Easiest way to run QGC is to download Ubuntu App image and just run it from
+command line:
+https://s3-us-west-2.amazonaws.com/qgroundcontrol/latest/QGroundControl.AppImage
+
+Set QGroundControl connection:
+* Type: TCP
+* Host Address: *[ your drone container ip ]*
+* Listening Port: 5760
+
+Check above *[ your drone container ip ]* address by calling:<br>
 `docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' drone-<your_drone_device_id>`
 
-If you have ROS2 set up in host environment, you can see all the ROS2 nodes and topics from drone container over docker0 network.
+
 
 ## Files:
 

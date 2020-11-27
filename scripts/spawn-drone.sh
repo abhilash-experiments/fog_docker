@@ -9,7 +9,9 @@ fi
 mav_addr=$1
 # Get index from last digit of mavlink_ip.
 # Index is used for place drone into the world coordinate if x,y not given
-default_Y=$(( 3 * $(echo ${mav_addr} | cut -d '.' -f 4) ))
+#  drones ip addresses start normally from 172.17.0.3, so substract 3 to start
+#  locate drones from y_pos 0
+default_Y=$(( 3 * ( $(echo ${mav_addr} | cut -d '.' -f 4) - 3 ) ))
 
 name=$2
 pos_x=${3:-0.0}
