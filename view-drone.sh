@@ -1,1 +1,1 @@
-docker exec -ti drone_${1} bash
+docker exec -ti drone-${1} bash

@@ -1,0 +1,5 @@
+ARG tag
+FROM sitl-drone:${tag} as sitl-drone-provisioned
+
+FROM sitl-drone-provisioned
+COPY enclave /enclave

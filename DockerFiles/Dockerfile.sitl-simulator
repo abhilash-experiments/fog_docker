@@ -1,0 +1,20 @@
+ARG tag
+FROM sitl-px4-base:${tag} as sitl-px4-base-tagged
+
+FROM gazebo:gzserver11-focal
+
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    gazebo11-plugin-base \
+    python3-jinja2 \
+    python3-numpy \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /simulator
+
+COPY scripts/run-fog-gazebo.sh                                              run-fog-gazebo.sh
+COPY scripts/spawn-drone.sh                                                 spawn-drone.sh
+COPY --from=sitl-px4-base-tagged /px4_sitl/Tools/setup_gazebo.bash          Tools/setup_gazebo.bash
+COPY --from=sitl-px4-base-tagged /px4_sitl/Tools/sitl_gazebo                Tools/sitl_gazebo
+COPY --from=sitl-px4-base-tagged /px4_sitl/build_gazebo                     build_gazebo
+
+ENTRYPOINT ["/simulator/run-fog-gazebo.sh"]
