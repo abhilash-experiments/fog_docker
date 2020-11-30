@@ -17,10 +17,14 @@ cd fog_docker
 ```
 ./build.sh
 ```
-3. run system<br>
+3. run simulation<br>
 ```
 ./sitl-simulator-start.sh
 ./sitl-drone-add -d <your_drone_device_id>
+```
+4. stop simulation<br>
+```
+./sitl-simulator-stop.sh
 ```
 
 ## Simulation viewers
@@ -69,6 +73,7 @@ Create container images:
 
 Run container images:
 * sitl-simulator-start.sh : Run gazebo simulator container
+* sitl-simulator-stop.sh : Stop simulator and drone containers
 * sitl-drone-add.sh : Run drone container. Use -h flag to see parameters
 
 Scripts included in container image:
