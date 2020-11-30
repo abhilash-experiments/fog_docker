@@ -75,7 +75,7 @@ if [ ${build_fogsw} = 1 ]; then
     pushd .
     if [ ! -d fog_sw ]; then
         echo "Clone fog_sw git reporsitory"
-        git clone git@github.com:tiiuae/fog_sw.git fog_sw
+        git clone https://github.com/tiiuae/fog_sw.git fog_sw
         cd fog_sw
     else
         cd fog_sw
@@ -95,7 +95,7 @@ if [ ${build_px4} = 1 ]; then
     pushd .
     if [ ! -d px4-firmware ]; then
         echo "Clone px4-firmware git reporsitory"
-        git clone git@github.com:tiiuae/px4-firmware.git px4-firmware
+        git clone https://github.com/tiiuae/px4-firmware.git px4-firmware
         cd px4-firmware
     else
         cd px4-firmware
