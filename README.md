@@ -10,7 +10,7 @@ https://docs.docker.com/engine/install/ubuntu/
 ## Instractions:
 1. Clone fog_docker git repo<br>
 ```
-git clone git@github.com:tiiuae/fog_docker.git fog_docker
+git clone https://github.com/tiiuae/fog_docker.git fog_docker
 cd fog_docker
 ```
 2. Build your simulation environment. Use -h flag to see optional parameters<br>
