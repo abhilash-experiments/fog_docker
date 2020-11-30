@@ -3,6 +3,7 @@
 tag_value="latest"
 build_opt=""
 device_id=""
+clean_build=0
 
 build_fogsw=0
 build_px4=0
@@ -14,6 +15,7 @@ usage() {
     echo " Parameters:"
     echo "  -h : Show this help message"
     echo "  -t : Tag value for docker images. Defalut: 'latest'"
+    echo "  -c : Clean build. Delete and clone SW repo before build"
     echo "  -b : Build options:"
     echo "        all   : Build everything and generate all containers"
     echo "        fogsw : Build fog_sw and generate necessary containers"
@@ -28,12 +30,13 @@ usage() {
     exit -1
 }
 
-while getopts ht:ab:p: option
+while getopts hct:ab:p: option
 do
 case "$option"
 in
     h) usage ;;
     t) tag_value=$OPTARG ;;
+    c) clean_build=1 ;;
     b) build_opt=$OPTARG
         if [ "${build_opt}" = "all" ]; then
             # Set Build all
@@ -73,6 +76,10 @@ if [ ${build_fogsw} = 1 ]; then
     echo "===== FOG SW Base docker image ====="
     echo
     pushd .
+    if [ ${clean_build} = 1 ]; then
+        echo "Clean build, delete fog_sw directory"
+        rm -Rf fog_sw
+    fi
     if [ ! -d fog_sw ]; then
         echo "Clone fog_sw git reporsitory"
         git clone https://github.com/tiiuae/fog_sw.git fog_sw
@@ -93,6 +100,10 @@ if [ ${build_px4} = 1 ]; then
     echo "===== PX4 Base docker image ====="
     echo
     pushd .
+    if [ ${clean_build} = 1 ]; then
+        echo "Clean build, delete px4-firmware directory"
+        rm -Rf px4-firmware
+    fi
     if [ ! -d px4-firmware ]; then
         echo "Clone px4-firmware git reporsitory"
         git clone https://github.com/tiiuae/px4-firmware.git px4-firmware
