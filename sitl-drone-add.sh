@@ -1,6 +1,6 @@
 #!/bin/bash
 
-device_id=""
+device_id="default"
 tag='latest'
 
 usage() {
@@ -22,11 +22,6 @@ in
     t) tag=$OPTARG ;;
 esac
 done
-
-if [ "${device_id}" = "" ]; then
-    echo "ERROR: Device ID missing!"
-    exit -1
-fi
 
 image_name=sitl-drone-${device_id}:${tag}
 
