@@ -70,14 +70,6 @@ RUN cd FastRTPS-1.8.2 \
     && cmake ../ -DTHIRDPARTY=ON \
     && make install
 
-# Setup git & ssh
-RUN git config --global url."git@github.com:".insteadOf "https://github.com/"
-ARG SSH_PRIVATE_KEY
-RUN mkdir /root/.ssh/ \
-    && echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_ed25519 \
-    && chmod 600 /root/.ssh/id_ed25519 \
-    && ssh-keyscan github.com >> /root/.ssh/known_hosts
-
 WORKDIR /
 
 # Copy repository contents
@@ -119,12 +111,6 @@ RUN cd fog_sw/ros2_ws/src/px4_ros_com \
     && bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy \
     && fakeroot debian/rules binary \
     && mv ../*.deb ../../../packaging/
-
-RUN cd fog_sw/packaging/communication_link \
-    && export GOPRIVATE="github.com/ssrc-tii" \
-    && . /opt/ros/foxy/setup.sh \
-    && ./package.sh
-
 
 # Bare bones image containing only the build results
 # This image can be used for retrieving relevant px4 firmware artifacts
