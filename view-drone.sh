@@ -1,13 +1,21 @@
 device_id="default"
 
-if [ "$1" = "-h" ]; then
-    echo "USAGE: $0 [your_drone_device_id]"
+usage() {
+    echo "USAGE: $0 [ -h | -d <id> ]"
+    echo " Parameters:"
+    echo "  -h      : Show this help message"
+    echo "  -d <id> : Drone device_id in cloud"
     echo
     exit -1
-fi
+}
 
-if [ "$1" != "" ]; then
-    device_id=${1}
-fi
+while getopts hd: option
+do
+case "$option"
+in
+    h) usage && exit -1 ;;
+    d) device_id=$OPTARG ;;
+esac
+done
 
 docker exec -ti drone-${device_id} bash
