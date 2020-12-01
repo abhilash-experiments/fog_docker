@@ -4,8 +4,14 @@ Create docker images of PX4/ROS2 and Gazebo for local Drone simulation environme
 If you have ROS2 set up in host environment, you can see all the ROS2 nodes and topics of drone simulation container directly in your host machine over docker0 network.
 
 ## Pre-requirements:
-Ubuntu 20.04 with Docker installed:<br>
+Ubuntu 20.04 with Docker engine installed:<br>
 https://docs.docker.com/engine/install/ubuntu/
+
+Add your user to 'docker' group to be able to run docker without sudo:
+```
+sudo usermod -a -G docker YOUR_USE_NAME
+```
+You may need to logout and login again to make this change effective
 
 ## Instractions:
 1. Clone fog_docker git repo<br>
