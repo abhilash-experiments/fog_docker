@@ -3,6 +3,10 @@ FROM sitl-px4-base:${tag} as sitl-px4-base-tagged
 
 FROM gazebo:gzserver11-focal
 
+ENV LANG=C.UTF-8 \
+    LANGUAGE=C.UTF-8 \
+    LC_ALL=C.UTF-8
+
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     gazebo11-plugin-base \
     python3-jinja2 \

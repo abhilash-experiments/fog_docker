@@ -4,7 +4,7 @@ device_id="default"
 tag='latest'
 
 usage() {
-    echo "USAGE: $0 [ -h ] -d <device_id>"
+    echo "USAGE: $0 [ -h | -t <tag> | -d <device_id> ]"
     echo " Parameters:"
     echo "  -h      : Show this help message"
     echo "  -d <id> : Drone device_id in cloud"
