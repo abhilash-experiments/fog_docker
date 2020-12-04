@@ -8,9 +8,9 @@ RUN echo 'Etc/UTC' > /etc/timezone \
     && apt-get update && apt-get install -q -y tzdata \
     && rm -rf /var/lib/apt/lists/*
 
-ENV LANG C.UTF-8
-ENV LANGUAGE C.UTF-8
-ENV LC_ALL C.UTF-8
+ENV LANG=C.UTF-8 \
+    LANGUAGE=C.UTF-8 \
+    LC_ALL=C.UTF-8
 
 # Install ROS 2
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
@@ -19,8 +19,8 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     lsb-release \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-RUN echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 \
+    && echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list
 
 # Install build dependencies
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
@@ -111,6 +111,14 @@ RUN cd fog_sw/ros2_ws/src/px4_ros_com \
     && bloom-generate rosdebian --os-name ubuntu --os-version focal --ros-distro foxy \
     && fakeroot debian/rules binary \
     && mv ../*.deb ../../../packaging/
+
+# install px4_msgs for compiling communication_link
+RUN cd /fog_sw/packaging/ \
+    && dpkg -i ros-foxy-px4-msgs*.deb
+
+RUN cd fog_sw/packaging/communication_link \
+    && . /opt/ros/foxy/setup.sh \
+    && ./package.sh
 
 # Bare bones image containing only the build results
 # This image can be used for retrieving relevant px4 firmware artifacts

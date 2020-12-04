@@ -24,9 +24,9 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     python3-genmsg \
     && rm -rf /var/lib/apt/lists/*
 
-ENV LANG C.UTF-8
-ENV LANGUAGE C.UTF-8
-ENV LC_ALL C.UTF-8
+ENV LANG=C.UTF-8 \
+    LANGUAGE=C.UTF-8 \
+    LC_ALL=C.UTF-8
 
 RUN mkdir -p /fastrtps
 WORKDIR /fastrtps
