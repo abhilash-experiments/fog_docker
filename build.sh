@@ -8,6 +8,7 @@ dont_update=0
 
 build_fogsw=0
 build_px4=0
+build_gzpkgs=0
 build_sim=0
 build_drone=0
 
@@ -24,6 +25,7 @@ usage() {
     echo "        all    : Build everything and generate all containers"
     echo "        fogsw  : Build fog_sw and generate necessary containers"
     echo "        px4    : Build px4 and generate necessary containers"
+    echo "        gzpkgs : Build gazebo ROS2 pkgs"
     echo "        sim    : Generate simulator container"
     echo "        drone  : Generate drone container"
     echo "        none   : Don't build anything. Can be used with -p flag"
@@ -47,6 +49,7 @@ in
             # Set Build all
             build_fogsw=1
             build_px4=1
+            build_gzpkgs=1
             build_sim=1
             build_drone=1
         elif [ "${build_opt}" = "fogsw" ]; then
@@ -56,6 +59,9 @@ in
             build_px4=1
             build_sim=1
             build_drone=1
+        elif [ "${build_opt}" = "gzpkgs" ]; then
+            build_gzpkgs=1
+            build_sim=1
         elif [ "${build_opt}" = "sim" ]; then
             build_sim=1
         elif [ "${build_opt}" = "drone" ]; then
@@ -71,6 +77,7 @@ if [ "${build_opt}" = "" ]; then
     # If build option not set then build all
     build_fogsw=1
     build_px4=1
+    build_gzpkgs=1
     build_sim=1
     build_drone=1
 fi
@@ -141,6 +148,39 @@ if [ ${build_px4} = 1 ]; then
     echo "Create sitl-px4-base:${tag_value} image"
     cp DockerFiles/Dockerfile.sitl-px4-base ./Dockerfile
     docker build -t sitl-px4-base:${tag_value} .
+fi
+
+if [ ${build_gzpkgs} = 1 ]; then
+    echo "===== Gazebo ROS2 pkgs base docker image ====="
+    echo
+    pushd .
+    if [ ${clean_build} = 1 ]; then
+        echo "Clean build, delete gazebo_ros_pkgs directory"
+        rm -Rf gazebo_ros_pkgs
+    fi
+    if [ ! -d gazebo_ros_pkgs ]; then
+        echo "Clone gazebo_ros_pkgs git reporsitory"
+        git clone  --single-branch --branch foxy https://github.com/ros-simulation/gazebo_ros_pkgs.git gazebo_ros_pkgs
+        sleep 1
+        cd gazebo_ros_pkgs
+    else
+        cd gazebo_ros_pkgs
+        if [ ${dont_update} = 0 ]; then
+            git pull
+        fi
+    fi
+    if [ ${dont_update} = 0 ] && [ ${clean_build} = 0 ]; then
+        echo "Update gazebo_ros_pkgs submodules"
+        git submodule update --init --recursive
+        sleep 1
+        git reset --hard
+        git submodule foreach --recursive git reset --hard
+        sleep 1
+    fi
+    popd
+    echo "Create sitl-gzpkgs-base:${tag_value} image"
+    cp DockerFiles/Dockerfile.sitl-gzpkgs-base ./Dockerfile
+    docker build -t sitl-gzpkgs-base:${tag_value} .
 fi
 
 if [ ${build_sim} = 1 ]; then

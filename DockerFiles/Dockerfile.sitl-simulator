@@ -1,5 +1,6 @@
 ARG tag
 FROM sitl-px4-base:${tag} as sitl-px4-base-tagged
+FROM sitl-gzpkgs-base:${tag} as sitl-gzpkgs-base-tagged
 
 FROM gazebo:gzserver11-focal
 
@@ -7,10 +8,26 @@ ENV LANG=C.UTF-8 \
     LANGUAGE=C.UTF-8 \
     LC_ALL=C.UTF-8
 
+# Install ROS 2
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    curl \
+    gnupg2 \
+    lsb-release \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 \
+    && echo "deb [arch=$(dpkg --print-architecture)] http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" > /etc/apt/sources.list.d/ros2-latest.list
+
+RUN apt-get update -y && apt-get install -y --no-install-recommends \
+    build-essential \
     gazebo11-plugin-base \
     python3-jinja2 \
     python3-numpy \
+    cmake \
+    git-core \
+    ca-certificates \
+    openjdk-11-jdk-headless \
+    ros-foxy-ros-base \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /simulator
@@ -20,5 +37,12 @@ COPY scripts/spawn-drone.sh                                                 spaw
 COPY --from=sitl-px4-base-tagged /px4_sitl/Tools/setup_gazebo.bash          Tools/setup_gazebo.bash
 COPY --from=sitl-px4-base-tagged /px4_sitl/Tools/sitl_gazebo                Tools/sitl_gazebo
 COPY --from=sitl-px4-base-tagged /px4_sitl/build_gazebo                     build_gazebo
+COPY --from=sitl-gzpkgs-base-tagged /gazebo_ros_pkgs/install                gazebo_ros_pkgs
+
+RUN echo "source /opt/ros/foxy/setup.bash" >> /root/.bashrc \
+    && echo "source /simulator/gazebo_ros_pkgs/setup.bash" >> /root/.bashrc \
+    && echo "source /opt/ros/foxy/setup.bash" >> /root/.bashrc
+
+ENV GAZEBO_PLUGIN_PATH=/simulator/gazebo_ros_pkgs/gazebo_plugins/lib:${GAZEBO_PLUGIN_PATH}
 
 ENTRYPOINT ["/simulator/run-fog-gazebo.sh"]
